@@ -10,12 +10,14 @@ class UserProfile extends StatefulWidget {
 }
 
 class _UserProfileState extends State<UserProfile> {
-  late Future<Map<String, String>> _userFuture;
+  // TODO: Add state for user data, loading, and error
+  // TODO: Fetch user info from userService (simulate for tests)
 
   @override
   void initState() {
     super.initState();
     _userFuture = widget.userService.fetchUser();
+    // TODO: Fetch user info and update state
   }
 
   @override
