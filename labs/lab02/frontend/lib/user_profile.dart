@@ -15,12 +15,7 @@ class _UserProfileState extends State<UserProfile> {
   @override
   void initState() {
     super.initState();
-    _userFuture = _fetchUser();
-  }
-
-  Future<Map<String, String>> _fetchUser() async {
-    // TODO: Fetch user info from userService
-    throw UnimplementedError();
+    _userFuture = widget.userService.fetchUser();
   }
 
   @override
@@ -30,21 +25,22 @@ class _UserProfileState extends State<UserProfile> {
       body: FutureBuilder<Map<String, String>>(
         future: _userFuture,
         builder: (context, snapshot) {
-          // TODO: Display user info, loading, and error states
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return Center(
-                child: Text('An error occurred: \\${snapshot.error}'));
+            return Center(child: Text('An error occurred: ${snapshot.error}'));
           } else if (snapshot.hasData) {
             final user = snapshot.data!;
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(user['name'] ?? '', style: const TextStyle(fontSize: 24)),
-                Text(user['email'] ?? '', style: const TextStyle(fontSize: 16)),
-                // TODO: Add more user fields if needed
-              ],
+            return Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(user['name'] ?? '',
+                      style: const TextStyle(fontSize: 24)),
+                  Text(user['email'] ?? '',
+                      style: const TextStyle(fontSize: 16)),
+                ],
+              ),
             );
           } else {
             return const Center(child: Text('No user data'));
