@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'chat_service.dart';
 
-// ChatScreen displays the chat UI
+/// ChatScreen displays the chat UI with real-time messages
 class ChatScreen extends StatefulWidget {
   final ChatService chatService;
   const ChatScreen({Key? key, required this.chatService}) : super(key: key);
@@ -15,8 +15,8 @@ class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _controller = TextEditingController();
   late final StreamSubscription<String> _subscription;
   final List<String> _messages = [];
-  String? _error;
   bool _loading = true;
+  String? _error;
 
   @override
   void initState() {
@@ -28,15 +28,17 @@ class _ChatScreenState extends State<ChatScreen> {
     }).catchError((e) {
       setState(() {
         _error = e.toString();
+        _loading = false;
       });
     });
     _subscription = widget.chatService.messageStream.listen((msg) {
       setState(() {
         _messages.add(msg);
       });
-    }, onError: (err) {
+    }, onError: (e) {
       setState(() {
-        _error = err.toString();
+        _error = e.toString();
+        _loading = false;
       });
     });
   }
@@ -61,52 +63,45 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (_loading) {
-      return Scaffold(
-        appBar: AppBar(title: const Text('Chat')),
-        body: const Center(child: CircularProgressIndicator()),
-      );
-    }
-    if (_error != null) {
-      return Scaffold(
-        appBar: AppBar(title: const Text('Chat')),
-        body: Center(child: Text('Error: $_error')),
-      );
-    }
     return Scaffold(
       appBar: AppBar(title: const Text('Chat')),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              itemCount: _messages.length,
-              itemBuilder: (context, index) {
-                return ListTile(title: Text(_messages[index]));
-              },
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    key: const Key('messageField'),
-                    controller: _controller,
-                    decoration:
-                        const InputDecoration(hintText: 'Type a message'),
-                  ),
+      body: _loading
+          ? const Center(child: CircularProgressIndicator())
+          : _error != null
+              ? Center(child: Text('Connection error: $_error'))
+              : Column(
+                  children: [
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: _messages.length,
+                        itemBuilder: (context, index) {
+                          return ListTile(title: Text(_messages[index]));
+                        },
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              key: const Key('messageField'),
+                              controller: _controller,
+                              decoration: const InputDecoration(
+                                hintText: 'Type a message',
+                              ),
+                            ),
+                          ),
+                          IconButton(
+                            key: const Key('sendButton'),
+                            icon: const Icon(Icons.send),
+                            onPressed: _sendMessage,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-                IconButton(
-                  key: const Key('sendButton'),
-                  icon: const Icon(Icons.send),
-                  onPressed: _sendMessage,
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

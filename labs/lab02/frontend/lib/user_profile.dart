@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:lab02_chat/user_service.dart';
 
-// UserProfile displays and updates user info
 class UserProfile extends StatefulWidget {
-  final dynamic userService; // Accepts a user service for fetching user info
+  final UserService userService;
   const UserProfile({Key? key, required this.userService}) : super(key: key);
 
   @override
@@ -20,33 +20,27 @@ class _UserProfileState extends State<UserProfile> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('User Profile')),
-      body: FutureBuilder<Map<String, String>>(
-        future: _userFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('An error occurred: ${snapshot.error}'));
-          } else if (snapshot.hasData) {
-            final user = snapshot.data!;
-            return Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(user['name'] ?? '',
-                      style: const TextStyle(fontSize: 24)),
-                  Text(user['email'] ?? '',
-                      style: const TextStyle(fontSize: 16)),
-                ],
-              ),
-            );
-          } else {
-            return const Center(child: Text('No user data'));
-          }
-        },
-      ),
+    return FutureBuilder<Map<String, String>>(
+      future: _userFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('error: ${snapshot.error}'));
+        } else if (snapshot.hasData) {
+          final user = snapshot.data!;
+          return Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(user['name'] ?? ''),
+                Text(user['email'] ?? ''),
+              ],
+            ),
+          );
+        }
+        return const Center(child: Text('No user data'));
+      },
     );
   }
 }

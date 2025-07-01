@@ -35,8 +35,8 @@ func (u *User) Validate() error {
 
 type UserManager struct {
 	ctx   context.Context
-	users map[string]User
-	mutex sync.RWMutex
+	users map[string]User // userID -> User
+	mutex sync.RWMutex    // Protects users map
 }
 
 // NewUserManager creates a new UserManager
@@ -57,7 +57,12 @@ func NewUserManagerWithContext(ctx context.Context) *UserManager {
 
 // AddUser adds a user
 func (m *UserManager) AddUser(u User) error {
+	// Check context
 	if err := m.ctx.Err(); err != nil {
+		return err
+	}
+	// Validate user data
+	if err := u.Validate(); err != nil {
 		return err
 	}
 	m.mutex.Lock()

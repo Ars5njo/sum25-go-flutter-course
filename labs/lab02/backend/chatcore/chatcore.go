@@ -45,25 +45,24 @@ func (b *Broker) Run() {
 		case <-b.ctx.Done():
 			return
 		case msg := <-b.input:
+			b.usersMutex.RLock()
 			if msg.Broadcast {
-				b.usersMutex.RLock()
 				for _, ch := range b.users {
 					ch <- msg
 				}
-				b.usersMutex.RUnlock()
 			} else {
-				b.usersMutex.RLock()
 				if ch, ok := b.users[msg.Recipient]; ok {
 					ch <- msg
 				}
-				b.usersMutex.RUnlock()
 			}
+			b.usersMutex.RUnlock()
 		}
 	}
 }
 
 // SendMessage sends a message to the broker
 func (b *Broker) SendMessage(msg Message) error {
+	// Return error if context is cancelled
 	if err := b.ctx.Err(); err != nil {
 		return err
 	}
@@ -74,13 +73,13 @@ func (b *Broker) SendMessage(msg Message) error {
 // RegisterUser adds a user to the broker
 func (b *Broker) RegisterUser(userID string, recv chan Message) {
 	b.usersMutex.Lock()
+	defer b.usersMutex.Unlock()
 	b.users[userID] = recv
-	b.usersMutex.Unlock()
 }
 
 // UnregisterUser removes a user from the broker
 func (b *Broker) UnregisterUser(userID string) {
 	b.usersMutex.Lock()
+	defer b.usersMutex.Unlock()
 	delete(b.users, userID)
-	b.usersMutex.Unlock()
 }

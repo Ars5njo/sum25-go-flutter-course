@@ -42,11 +42,13 @@ func (s *MessageStore) GetMessages(user string) ([]Message, error) {
 	defer s.mutex.RUnlock()
 
 	if user == "" {
+		// Return a copy of all messages
 		copyMsgs := make([]Message, len(s.messages))
 		copy(copyMsgs, s.messages)
 		return copyMsgs, nil
 	}
-	var filtered []Message
+	// Filter by sender
+	filtered := make([]Message, 0)
 	for _, m := range s.messages {
 		if m.Sender == user {
 			filtered = append(filtered, m)
