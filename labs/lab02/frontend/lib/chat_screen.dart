@@ -1,11 +1,12 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'chat_service.dart';
+import 'dart:async';
 
 /// ChatScreen displays the chat UI with real-time messages
 class ChatScreen extends StatefulWidget {
   final ChatService chatService;
-  const ChatScreen({Key? key, required this.chatService}) : super(key: key);
+  const ChatScreen({super.key, required this.chatService});
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -63,6 +64,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // TODO: Build chat UI with loading, error, and message list
     return Scaffold(
       appBar: AppBar(title: const Text('Chat')),
       body: _loading
