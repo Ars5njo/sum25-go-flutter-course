@@ -19,14 +19,12 @@ class Message {
   }
 }
 
-/// Request to create a message
 class CreateMessageRequest {
   final String username;
   final String content;
 
   CreateMessageRequest({required this.username, required this.content});
 
-  /// Validates request fields; returns error message or null
   String? validate() {
     if (username.isEmpty) return 'username is required';
     if (content.isEmpty) return 'content is required';
@@ -38,13 +36,11 @@ class CreateMessageRequest {
   }
 }
 
-/// Request to update a message
 class UpdateMessageRequest {
   final String content;
 
   UpdateMessageRequest({required this.content});
 
-  /// Validates update request
   String? validate() {
     if (content.isEmpty) return 'content is required';
     return null;
@@ -55,7 +51,6 @@ class UpdateMessageRequest {
   }
 }
 
-/// HTTP status response model
 class HTTPStatusResponse {
   final int statusCode;
   final String imageUrl;

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-/// Stubbed ChatScreen for Lab03 tests
 typedef ApiServiceProvider = Object;
 
 class ChatScreen extends StatelessWidget {
